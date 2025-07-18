@@ -58,6 +58,10 @@ public class User {
         return roles;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
         if (loginRequest == null) {
             throw new IllegalArgumentException("Invalid credentials");

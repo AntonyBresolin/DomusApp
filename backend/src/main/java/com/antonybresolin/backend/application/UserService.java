@@ -43,7 +43,7 @@ public class UserService {
                 }
         );
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build();
     }
 
     public List<User> getUsers() {
