@@ -1,13 +1,11 @@
-package com.antonybresolin.ai_generator_controller;
+package com.antonybresolin.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AiGeneratorControllerApplication {
-
+public class BackendApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(AiGeneratorControllerApplication.class, args);
+		SpringApplication.run(BackendApplication.class, args);
 	}
-
 }

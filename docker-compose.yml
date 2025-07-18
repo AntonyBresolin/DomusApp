@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mysql-monolith:
+    image: mysql:latest
+    container_name: mysql-monolith-container
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+      - MYSQL_DATABASE=db_monolith
+      - MYSQL_ROOT_PASSWORD=admin
+    volumes:
+      - mysql-monolith-data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-container
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # Management UI port
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    
+volumes:
+  mysql-monolith-data:
+  rabbitmq-data:
