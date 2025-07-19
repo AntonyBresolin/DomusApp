@@ -25,7 +25,6 @@ public class AuthPresentation {
     @Transactional
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-
         validCredentials(loginRequest);
         Map<String, String> responseBody = authService.isValidUser(loginRequest, response);
         return ResponseEntity.ok(responseBody);
