@@ -391,7 +391,7 @@ const LandingPage = () => {
         </div>
       </footer>
 
-     {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={toggleLoginModal} />}
+     <LoginModal isOpen={isLoginModalOpen} onClose={toggleLoginModal} />
     </div>
   );
 };
