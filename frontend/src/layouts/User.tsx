@@ -14,8 +14,8 @@ const User = () => {
     const checkAuth = async () => {
       try {
         const authStatus = await AuthService.checkAuthStatus();
-        setIsAuthenticated(authStatus.authenticated);
-        if (!authStatus.authenticated) {
+        setIsAuthenticated(authStatus.isAuthenticated);
+        if (!authStatus.isAuthenticated) {
           navigate('/');
         }
       } catch (error) {
