@@ -2,16 +2,20 @@ package com.antonybresolin.backend.presentation;
 
 import com.antonybresolin.backend.application.AuthService;
 import com.antonybresolin.backend.presentation.dto.LoginRequest;
+import com.antonybresolin.backend.presentation.dto.UserAuthenticatedResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -24,9 +28,9 @@ public class AuthPresentation {
 
     @Transactional
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<UserAuthenticatedResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         validCredentials(loginRequest);
-        Map<String, String> responseBody = authService.isValidUser(loginRequest, response);
+        UserAuthenticatedResponse responseBody = authService.isValidUser(loginRequest, response);
         return ResponseEntity.ok(responseBody);
     }
 
@@ -34,6 +38,23 @@ public class AuthPresentation {
     public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
         Map<String, String> responseBody = authService.logout(response);
         return ResponseEntity.ok(responseBody);
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, Object>> getAuthStatus(JwtAuthenticationToken token) {
+        if (token != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("authenticated", true);
+            response.put("username", token.getName());
+
+            Collection<String> roles = token.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+            response.put("roles", roles);
+
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("authenticated", false));
     }
 
     public void validCredentials(LoginRequest loginRequest) {
