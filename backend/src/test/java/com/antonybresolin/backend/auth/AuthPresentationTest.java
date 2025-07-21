@@ -6,6 +6,7 @@ import com.antonybresolin.backend.domain.model.User;
 import com.antonybresolin.backend.infrastructure.repositories.UserRepository;
 import com.antonybresolin.backend.presentation.AuthPresentation;
 import com.antonybresolin.backend.presentation.dto.LoginRequest;
+import com.antonybresolin.backend.presentation.dto.UserAuthenticatedResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -75,11 +77,12 @@ public class AuthPresentationTest {
         when(passwordEncoder.matches(eq(loginRequest.password()), eq(mockUser.getPassword())))
                 .thenReturn(true);
 
-        ResponseEntity<Map<String, String>> responseEntity = authPresentation.login(loginRequest, response);
+        ResponseEntity<UserAuthenticatedResponse> responseEntity = authPresentation.login(loginRequest, response);
 
         assertNotNull(responseEntity);
         assertEquals(200, responseEntity.getStatusCode().value());
-        assertTrue(responseEntity.getBody().containsKey("accessToken"));
+        assertTrue(Objects.requireNonNull(responseEntity.getBody()).isAuthenticated);
+        assertNotNull(responseEntity.getBody().user);
         verify(response).addCookie(any(Cookie.class));
     }
 

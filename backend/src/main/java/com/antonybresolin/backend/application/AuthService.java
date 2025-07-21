@@ -4,6 +4,8 @@ import com.antonybresolin.backend.domain.model.Role;
 import com.antonybresolin.backend.domain.model.User;
 import com.antonybresolin.backend.infrastructure.repositories.UserRepository;
 import com.antonybresolin.backend.presentation.dto.LoginRequest;
+import com.antonybresolin.backend.presentation.dto.UserAuthenticatedResponse;
+import com.antonybresolin.backend.presentation.dto.UserResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,7 @@ public class AuthService {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public Map<String, String> isValidUser(LoginRequest loginRequest, HttpServletResponse response) {
+    public UserAuthenticatedResponse isValidUser(LoginRequest loginRequest, HttpServletResponse response) {
         var user = userRepository.findByUsername(loginRequest.username());
         if(user.isEmpty() || !user.get().isLoginCorrect(loginRequest, passwordEncoder)) {
             throw new BadCredentialsException("Invalid username or password");
@@ -44,10 +46,12 @@ public class AuthService {
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
         cookieConfig(response, jwtValue);
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("accessToken", jwtValue);
 
-        return responseBody;
+        return new UserAuthenticatedResponse(
+                new UserResponse(user.get().getUsername(),
+                        user.get().getRoles().stream().map(Role::getName).collect(Collectors.toSet())),
+                true
+        );
     }
 
     public Map<String, String> logout(HttpServletResponse response) {
