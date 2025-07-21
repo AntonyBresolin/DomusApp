@@ -1,0 +1,30 @@
+name: Análise de Código com SpotBugs e PMD
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  analise:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Rodar SpotBugs
+        run: mvn com.github.spotbugs:spotbugs-maven-plugin:check --no-transfer-progress
+
+      - name: Rodar PMD
+        run: mvn pmd:check --no-transfer-progress
