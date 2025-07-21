@@ -1,7 +1,5 @@
 package com.antonybresolin.backend.presentation.dto;
 
-import com.antonybresolin.backend.domain.model.User;
-
 public class UserAuthenticatedResponse {
     public UserResponse user;
     public boolean isAuthenticated;
