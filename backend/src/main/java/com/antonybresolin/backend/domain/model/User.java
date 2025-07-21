@@ -50,11 +50,6 @@ public class User {
         this.password = password;
     }
 
-    public void clearSensitiveData() {
-        this.password = null;
-        this.roles = null;
-    }
-
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }

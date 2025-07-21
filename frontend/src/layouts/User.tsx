@@ -38,7 +38,7 @@ const User = () => {
       <div className='h-screen w-screen overflow-hidden bg-slate-100'>
         <NavbarUser />
         <Routes>
-          <Route path="/" element={<PrivateRoute isAuthenticated={isAuthenticated} element={DashboardUser} />} />
+          <Route path="/" element={<PrivateRoute element={DashboardUser} />} />
           {/* Outras rotas protegidas */}
         </Routes>
       </div>

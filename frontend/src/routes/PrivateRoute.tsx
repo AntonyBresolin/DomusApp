@@ -13,6 +13,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -21,7 +22,11 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
     );
   }
 
-  return isAuthenticated ? <Element {...rest} /> : <Navigate to="/" replace />;
+  if (isAuthenticated) {
+    return <Element {...rest} />;
+  } else {
+    return <Navigate to="/" replace />;
+  }
 };
 
 export default PrivateRoute;

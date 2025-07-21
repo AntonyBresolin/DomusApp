@@ -7,6 +7,7 @@ export interface User {
   phone?: string;
   cpf?: string;
   userType?: 'proprietario' | 'inquilino';
+  roles?: string[];
 }
 
 // Auth types
@@ -27,6 +28,8 @@ export interface RegisterData {
 export interface AuthResponse {
   isAuthenticated: boolean;
   user?: User;
+  username?: string;
+  roles?: string[];
   message?: string;
 }
 

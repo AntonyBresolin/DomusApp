@@ -5,6 +5,7 @@ import com.antonybresolin.backend.domain.model.User;
 import com.antonybresolin.backend.infrastructure.repositories.UserRepository;
 import com.antonybresolin.backend.presentation.dto.LoginRequest;
 import com.antonybresolin.backend.presentation.dto.UserAuthenticatedResponse;
+import com.antonybresolin.backend.presentation.dto.UserResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,11 @@ public class AuthService {
 
         cookieConfig(response, jwtValue);
 
-        return new UserAuthenticatedResponse(user.get(), true);
+        return new UserAuthenticatedResponse(
+                new UserResponse(user.get().getUsername(),
+                        user.get().getRoles().stream().map(Role::getName).collect(Collectors.toSet())),
+                true
+        );
     }
 
     public Map<String, String> logout(HttpServletResponse response) {

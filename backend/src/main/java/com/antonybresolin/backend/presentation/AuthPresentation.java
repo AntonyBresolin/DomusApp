@@ -44,7 +44,7 @@ public class AuthPresentation {
     public ResponseEntity<Map<String, Object>> getAuthStatus(JwtAuthenticationToken token) {
         if (token != null) {
             Map<String, Object> response = new HashMap<>();
-            response.put("authenticated", true);
+            response.put("isAuthenticated", true);
             response.put("username", token.getName());
 
             Collection<String> roles = token.getAuthorities().stream()
@@ -54,7 +54,7 @@ public class AuthPresentation {
 
             return ResponseEntity.ok(response);
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("authenticated", false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("isAuthenticated", false));
     }
 
     public void validCredentials(LoginRequest loginRequest) {
