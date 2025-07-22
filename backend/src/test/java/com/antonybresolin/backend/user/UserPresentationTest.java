@@ -63,7 +63,7 @@ public class UserPresentationTest {
 
     @Test
     void createUser() {
-        CreateUserDto dto = new CreateUserDto("antony", "123");
+        CreateUserDto dto = new CreateUserDto("antony", "123", "111.111.111-01", "antony henrique bresolin", true);
         
         when(userRepository.findByUsername("antony")).thenReturn(Optional.empty());
         
@@ -77,7 +77,7 @@ public class UserPresentationTest {
 
     @Test
     void createUser_UserAlreadyExists_ThrowsException() {
-        CreateUserDto dto = new CreateUserDto("antony", "123");
+        CreateUserDto dto = new CreateUserDto("antony", "123", "111.111.111-01", "antony henrique bresolin", true);
         
         User existingUser = new User();
         existingUser.setUsername("antony");

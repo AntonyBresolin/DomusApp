@@ -18,6 +18,8 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password;
+    private String name;
+    private String cpf;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
@@ -30,9 +32,11 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password, Set<Role> roles) {
+    public User(String username, String password, String name, String cpf, Set<Role> roles) {
         setUsername(username);
         setPassword(password);
+        this.name = name;
+        this.cpf = cpf;
         this.roles = roles;
     }
 
@@ -60,6 +64,22 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {

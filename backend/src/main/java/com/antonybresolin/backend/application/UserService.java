@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,8 +29,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<Void> createUser(CreateUserDto dto){
-        var basicRole = roleRepository.findByName(Role.Values.BASIC.name());
+    public ResponseEntity<Void> createUser(CreateUserDto dto) {
         var userFromDB = userRepository.findByUsername(dto.username());
 
         userFromDB.ifPresentOrElse(
@@ -37,13 +37,24 @@ public class UserService {
                     throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
                 },
                 () -> {
-                    User user = new User(dto.username(), passwordEncoder.encode(dto.password()), Set.of(basicRole));
-
+                    User user = new User(dto.username(), passwordEncoder.encode(dto.password()), dto.name(), dto.cpf(), getUserRoles(dto));
                     userRepository.save(user);
                 }
         );
 
         return ResponseEntity.status(201).build();
+    }
+
+    private Set<Role> getUserRoles(CreateUserDto dto) {
+        Set<Role> roles = new HashSet<>();
+        if (dto.isLocator()) {
+            roles.add(roleRepository.findByName(Role.Values.LOCATOR.name()));
+        } else {
+            roles.add(roleRepository.findByName(Role.Values.TENANT.name()));
+        }
+        var basicRole = roleRepository.findByName(Role.Values.BASIC.name());
+        roles.add(basicRole);
+        return roles;
     }
 
     public List<User> getUsers() {
