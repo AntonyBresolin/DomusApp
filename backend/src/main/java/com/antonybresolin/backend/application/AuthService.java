@@ -49,7 +49,8 @@ public class AuthService {
 
         return new UserAuthenticatedResponse(
                 new UserResponse(user.get().getUsername(),
-                        user.get().getRoles().stream().map(Role::getName).collect(Collectors.toSet())),
+                        user.get().getRoles().stream().map(Role::getName).collect(Collectors.toSet()),
+                        user.get().getName()),
                 true
         );
     }
