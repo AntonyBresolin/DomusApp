@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import PrivateRoute from '../routes/PrivateRoute';
 import { AuthService } from '../services/AuthService';
-import NavbarUser from '../components/Header/NavbarUser';
 import DashboardUser from '../views/DashboardUser';
 
 const User = () => {
@@ -35,8 +34,7 @@ const User = () => {
 
   return (
     <>
-      <div className='h-screen w-screen overflow-hidden bg-slate-100'>
-        <NavbarUser />
+      <div className='h-screen w-screen overflow-x-hidden bg-slate-100'>
         <Routes>
           <Route path="/" element={<PrivateRoute element={DashboardUser} />} />
           {/* Outras rotas protegidas */}
