@@ -4,6 +4,7 @@ import com.antonybresolin.backend.application.HouseService;
 import com.antonybresolin.backend.domain.model.House;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ public class HousePresentation {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'LOCATOR')")
     public ResponseEntity<String> createHouse(@RequestBody House house,
                                             JwtAuthenticationToken token){
         String username = token.getName();

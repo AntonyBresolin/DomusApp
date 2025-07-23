@@ -41,6 +41,13 @@ public class House {
         this.status = status;
     }
 
+
+    public House(Address address, PropertyFeatures propertyFeatures) {
+        this.address = address;
+        this.propertyFeatures = propertyFeatures;
+        this.status = HouseStatus.DISPONIVEL;
+    }
+
     public Address getAddress() {
         return address;
     }
