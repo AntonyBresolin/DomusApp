@@ -19,6 +19,18 @@ public class House {
     @Embedded
     private PropertyFeatures propertyFeatures;
     private HouseStatus status;
+    @ManyToOne
+    @JoinColumn(name = "user_user_id")
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 
     public House() {
     }
