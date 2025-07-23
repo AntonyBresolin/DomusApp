@@ -1,6 +1,11 @@
 package com.antonybresolin.backend.domain.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_roles")
@@ -29,7 +34,9 @@ public class Role {
 
     public enum Values {
         ADMIN(1L),
-        BASIC(2L);
+        BASIC(2L),
+        LOCATOR(3L),
+        TENANT(4L);
 
         final long roleId;
 
