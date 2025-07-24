@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/test/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v3/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1").hasRole("BASIC")
+                        .requestMatchers(HttpMethod.GET, "/api/v1").hasAuthority("SCOPE_BASIC")
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())

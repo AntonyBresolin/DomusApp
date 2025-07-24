@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/houses")
-@SecurityRequirement(name = "bearerAuth")
 public class HousePresentation {
     private final HouseService houseService;
 
@@ -31,7 +30,7 @@ public class HousePresentation {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'LOCATOR')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_LOCATOR')")
     public ResponseEntity<String> createHouse(@RequestBody CreateHouseDTO houseDTO,
                                             JwtAuthenticationToken token){
         String username = token.getName();

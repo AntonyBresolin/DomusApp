@@ -8,9 +8,6 @@ import com.antonybresolin.backend.infrastructure.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -25,24 +22,25 @@ public class HouseService {
         this.userRepository = userRepository;
     }
 
-    @GetMapping
     public Optional<List<House>> getHousesByOwner(String username) {
-        userIsValid(username);
+        getUserOrReturn(username);
+        
         return Optional.ofNullable(houseRepository.findHouseByUser_Username(username).orElseThrow(
-                () -> new ResourceNotFoundException("Nenhuma casa não encontrada")
+                () -> new ResourceNotFoundException("Nenhuma casa encontrada")
         ));
     }
 
-    @PostMapping
     public ResponseEntity<String> createHouse(House house, String username) {
-        userIsValid(username);
+        User user = getUserOrReturn(username);
 
+        house.setUser(user);
         houseRepository.save(house);
         return ResponseEntity.status(201).body("Casa criada com sucesso");
     }
 
-    private void userIsValid(String username) {
-        User user = userRepository.findByUsername(username).get();
-        if(!user.getUsername().equals(username)) throw new IllegalArgumentException("Usuário divergente do autenticado.");
+    private User getUserOrReturn(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("Usuário não encontrado")
+        );
     }
 }
