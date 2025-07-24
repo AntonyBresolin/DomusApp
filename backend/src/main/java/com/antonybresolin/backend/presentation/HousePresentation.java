@@ -2,6 +2,7 @@ package com.antonybresolin.backend.presentation;
 
 import com.antonybresolin.backend.application.HouseService;
 import com.antonybresolin.backend.domain.model.House;
+import com.antonybresolin.backend.presentation.dto.CreateHouseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,12 +32,11 @@ public class HousePresentation {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'LOCATOR')")
-    public ResponseEntity<String> createHouse(@RequestBody House house,
+    public ResponseEntity<String> createHouse(@RequestBody CreateHouseDTO houseDTO,
                                             JwtAuthenticationToken token){
         String username = token.getName();
         // TODO - Fazer validação em todos lugares se o userID do token é igual ao que ele está passando em house
-
-        return houseService.createHouse(house, username);
+        return houseService.createHouse(new House(houseDTO.address(), houseDTO.propertyFeatures()), username);
     }
 
 }

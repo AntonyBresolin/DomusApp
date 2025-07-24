@@ -11,6 +11,7 @@ import com.antonybresolin.backend.domain.model.value.PropertyFeatures;
 import com.antonybresolin.backend.infrastructure.repositories.HouseRepository;
 import com.antonybresolin.backend.infrastructure.repositories.UserRepository;
 import com.antonybresolin.backend.presentation.HousePresentation;
+import com.antonybresolin.backend.presentation.dto.CreateHouseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -42,6 +43,7 @@ public class HouseTest {
     private HouseService houseService;
     private HousePresentation housePresentation;
     private User mockUser;
+    private CreateHouseDTO mockHouseDTO;
     private House mockHouse;
 
     @BeforeEach
@@ -61,6 +63,7 @@ public class HouseTest {
 
         Address address = new Address("Assis Chateaubriand", "PR", "85937000", "Rua Paraná");
         PropertyFeatures features = new PropertyFeatures(4, 2, 54.4F);
+        mockHouseDTO = new CreateHouseDTO(address, features);
         mockHouse = new House(address, features);
         mockHouse.setUser(mockUser);
 
@@ -72,12 +75,12 @@ public class HouseTest {
         when(userRepository.findByUsername("testowner")).thenReturn(Optional.of(mockUser));
         when(houseRepository.save(any(House.class))).thenReturn(mockHouse);
         
-        ResponseEntity<String> response = housePresentation.createHouse(mockHouse, token);
+        ResponseEntity<String> response = housePresentation.createHouse(mockHouseDTO, token);
         
         assertNotNull(response);
         assertEquals(201, response.getStatusCode().value());
         assertEquals("Casa criada com sucesso", response.getBody());
-        verify(houseRepository, times(1)).save(mockHouse);
+        verify(houseRepository, times(1)).save(any(House.class));
         verify(userRepository, times(1)).findByUsername("testowner");
     }
 
@@ -86,7 +89,7 @@ public class HouseTest {
         when(userRepository.findByUsername("testowner")).thenReturn(Optional.empty());
         
         assertThrows(Exception.class, () -> {
-            housePresentation.createHouse(mockHouse, token);
+            housePresentation.createHouse(mockHouseDTO, token);
         });
         
         verify(houseRepository, never()).save(any(House.class));
@@ -136,14 +139,14 @@ public class HouseTest {
         when(userRepository.findByUsername("testowner")).thenReturn(Optional.of(mockUser));
         when(houseRepository.save(any(House.class))).thenReturn(house);
         
-        ResponseEntity<String> response = housePresentation.createHouse(house, token);
+        ResponseEntity<String> response = housePresentation.createHouse(mockHouseDTO, token);
         
         assertNotNull(response);
         assertEquals(201, response.getStatusCode().value());
         assertEquals(HouseStatus.DISPONIVEL, house.getStatus());
         assertNotNull(house.getAddress());
         assertNotNull(house.getPropertyFeatures());
-        verify(houseRepository, times(1)).save(house);
+        verify(houseRepository, times(1)).save(any(House.class));
     }
 
     @Test
