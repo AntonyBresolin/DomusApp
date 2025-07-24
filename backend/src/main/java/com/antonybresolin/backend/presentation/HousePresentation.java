@@ -2,19 +2,19 @@ package com.antonybresolin.backend.presentation;
 
 import com.antonybresolin.backend.application.HouseService;
 import com.antonybresolin.backend.domain.model.House;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
 @RestController
+@RequestMapping("api/v1/houses")
+@SecurityRequirement(name = "bearerAuth")
 public class HousePresentation {
     private final HouseService houseService;
 
@@ -24,7 +24,7 @@ public class HousePresentation {
     }
 
     @GetMapping
-    public List<House> getHousesByOwner(JwtAuthenticationToken token){
+    public List<House> getHousesByOwner(JwtAuthenticationToken token) {
         String username = token.getName();
         return houseService.getHousesByOwner(username).orElse(Collections.emptyList());
     }
@@ -32,7 +32,7 @@ public class HousePresentation {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'LOCATOR')")
     public ResponseEntity<String> createHouse(@RequestBody House house,
-                                            JwtAuthenticationToken token){
+                                              JwtAuthenticationToken token) {
         String username = token.getName();
         // TODO - Fazer validação em todos lugares se o userID do token é igual ao que ele está passando em house
 
