@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/users")
 public class UserPresentation {
-
     private final UserService userService;
 
     @Autowired
