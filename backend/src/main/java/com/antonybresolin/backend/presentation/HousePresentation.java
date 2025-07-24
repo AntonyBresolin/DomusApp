@@ -2,6 +2,7 @@ package com.antonybresolin.backend.presentation;
 
 import com.antonybresolin.backend.application.HouseService;
 import com.antonybresolin.backend.domain.model.House;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/houses")
+@SecurityRequirement(name = "bearerAuth")
 public class HousePresentation {
     private final HouseService houseService;
 
