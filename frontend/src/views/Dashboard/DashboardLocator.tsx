@@ -4,7 +4,8 @@ import {
   HiCreditCard,
   HiLightningBolt,
   HiDocumentText,
-  HiShieldCheck
+  HiShieldCheck,
+  HiOfficeBuilding
 } from 'react-icons/hi';
 import {
   DashboardHeader,
@@ -21,6 +22,7 @@ import {
   type Tab,
   type DashboardStats
 } from '../../components/Dashboard/utils';
+import { PropertyListView } from '../../components/Dashboard/Properties';
 
 function DashboardLocator() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -36,6 +38,7 @@ function DashboardLocator() {
 
   const tabs: Tab[] = [
     { id: 'overview', name: 'Visão Geral', icon: HiHome },
+    { id: 'properties', name: 'Propriedades', icon: HiOfficeBuilding },
     { id: 'payments', name: 'Pagamentos', icon: HiCreditCard },
     { id: 'utilities', name: 'Utilidades', icon: HiLightningBolt },
     { id: 'contracts', name: 'Contratos', icon: HiDocumentText },
@@ -56,6 +59,8 @@ function DashboardLocator() {
             onTenantClick={handleTenantClick}
           />
         );
+      case 'properties':
+        return <PropertyListView />;
       case 'payments':
         return (
           <PaymentsTab 
