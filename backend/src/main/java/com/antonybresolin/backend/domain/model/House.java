@@ -7,7 +7,6 @@ import com.antonybresolin.backend.domain.model.value.PropertyFeatures;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
 import java.time.Instant;
