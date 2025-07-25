@@ -18,7 +18,11 @@ const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
   const isEditing = Boolean(initialData);
   const [formData, setFormData] = useState<PropertyFormData>({
     name: initialData?.name || '',
-    address: initialData?.address || '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    complement: '',
     type: initialData?.type || 'house',
     size: initialData?.size || 0,
     bedrooms: initialData?.bedrooms || 1,

@@ -26,6 +26,10 @@ export interface Property {
 export interface PropertyFormData {
   name: string;
   address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  complement?: string;
   type: 'house' | 'apartment' | 'commercial';
   size: number;
   bedrooms?: number;

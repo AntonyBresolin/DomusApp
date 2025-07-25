@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HiPlus, HiViewGrid, HiViewList, HiSearch, HiFilter } from 'react-icons/hi';
 import type { Property, PropertyFormData } from './types';
 import PropertyCard from './PropertyCard';
 import PropertyFormModal from './PropertyFormModal';
 import PropertyDetailsModal from './PropertyDetailsModal';
-import { mockProperties } from './mockData';
+import houseService, { HouseService } from '../../../services/HouseService';
+import type { House } from '../../../services/HouseService';
 
 interface PropertyListViewProps {
   className?: string;
 }
 
 const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) => {
-  const [properties, setProperties] = useState<Property[]>(mockProperties);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
@@ -19,6 +22,25 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'rented' | 'maintenance'>('all');
+
+  useEffect(() => {
+    loadProperties();
+  }, []);
+
+  const loadProperties = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const houses = await houseService.getHousesByOwner();
+      const convertedProperties = houses.map((house: House) => HouseService.convertToFrontendProperty(house));
+      setProperties(convertedProperties);
+    } catch (err) {
+      console.error('Erro ao carregar propriedades:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao carregar propriedades');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredProperties = properties.filter(property => {
     const matchesSearch = property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -49,29 +71,29 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
     }
   };
 
-  const handleFormSubmit = (formData: PropertyFormData) => {
-    if (editingProperty) {
-      const updatedProperty: Property = {
-        ...editingProperty,
-        ...formData,
-        updatedAt: new Date().toISOString()
-      };
-      setProperties(properties.map(p => 
-        p.id === editingProperty.id ? updatedProperty : p
-      ));
-    } else {
-      const newProperty: Property = {
-        ...formData,
-        id: `prop_${Date.now()}`,
-        status: 'available',
-        tenantId: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      setProperties([...properties, newProperty]);
+  const handleFormSubmit = async (formData: PropertyFormData) => {
+    try {
+      if (editingProperty) {
+        const updatedProperty: Property = {
+          ...editingProperty,
+          ...formData,
+          updatedAt: new Date().toISOString()
+        };
+        setProperties(properties.map(p => 
+          p.id === editingProperty.id ? updatedProperty : p
+        ));
+      } else {
+        const houseData = HouseService.convertToBackendFormat(formData);
+        await houseService.createHouse(houseData);
+        
+        await loadProperties();
+      }
+      setIsFormModalOpen(false);
+      setEditingProperty(null);
+    } catch (err) {
+      console.error('Erro ao salvar propriedade:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao salvar propriedade');
     }
-    setIsFormModalOpen(false);
-    setEditingProperty(null);
   };
 
   const getStatusCount = (status: string) => {
@@ -80,7 +102,6 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Minhas Propriedades</h2>
@@ -95,7 +116,6 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
         </button>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
@@ -146,10 +166,38 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
         </div>
       </div>
 
-      {/* Filters and Search */}
+      {loading && (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p className="mt-2 text-gray-600">Carregando propriedades...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Erro ao carregar propriedades</h3>
+              <p className="mt-1 text-sm text-red-700">{error}</p>
+              <button
+                onClick={loadProperties}
+                className="mt-2 text-sm text-red-800 hover:text-red-600 font-medium"
+              >
+                Tentar novamente
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && (
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="flex flex-col sm:flex-row gap-4">
-          {/* Search */}
           <div className="flex-1 relative">
             <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -161,7 +209,6 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
             />
           </div>
 
-          {/* Status Filter */}
           <div className="flex items-center space-x-2">
             <HiFilter className="text-gray-400 w-5 h-5" />
             <select
@@ -176,7 +223,6 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
             </select>
           </div>
 
-          {/* View Mode Toggle */}
           <div className="flex bg-gray-100 rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
@@ -199,9 +245,10 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
           </div>
         </div>
       </div>
+      )}
 
-      {/* Properties Grid/List */}
-      {filteredProperties.length === 0 ? (
+      {!loading && !error && (
+        filteredProperties.length === 0 ? (
         <div className="text-center py-12">
           <HiViewGrid className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma propriedade encontrada</h3>
@@ -238,9 +285,9 @@ const PropertyListView: React.FC<PropertyListViewProps> = ({ className = '' }) =
             />
           ))}
         </div>
+        )
       )}
 
-      {/* Modals */}
       <PropertyFormModal
         isOpen={isFormModalOpen}
         onClose={() => {
