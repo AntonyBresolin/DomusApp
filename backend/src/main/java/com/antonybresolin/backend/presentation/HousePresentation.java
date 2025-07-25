@@ -2,6 +2,7 @@ package com.antonybresolin.backend.presentation;
 
 import com.antonybresolin.backend.application.HouseService;
 import com.antonybresolin.backend.domain.model.House;
+import com.antonybresolin.backend.domain.model.value.HouseType;
 import com.antonybresolin.backend.presentation.dto.CreateHouseDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,17 @@ public class HousePresentation {
     public ResponseEntity<String> createHouse(@RequestBody CreateHouseDTO houseDTO,
                                             JwtAuthenticationToken token){
         String username = token.getName();
+
         // TODO - Fazer validação em todos lugares se o userID do token é igual ao que ele está passando em house
-        return houseService.createHouse(new House(houseDTO.address(), houseDTO.propertyFeatures()), username);
+        return houseService.createHouse(
+                new House(
+                        houseDTO.address(),
+                        houseDTO.propertyFeatures(),
+                        houseDTO.houseType() != null ? houseDTO.houseType() : HouseType.HOUSE,
+                        houseDTO.rentValue(),
+                        houseDTO.name(),
+                        houseDTO.description()),
+                username);
     }
 
 }

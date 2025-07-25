@@ -2,17 +2,15 @@ package com.antonybresolin.backend.domain.model;
 
 import com.antonybresolin.backend.domain.model.value.Address;
 import com.antonybresolin.backend.domain.model.value.HouseStatus;
+import com.antonybresolin.backend.domain.model.value.HouseType;
 import com.antonybresolin.backend.domain.model.value.PropertyFeatures;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -26,10 +24,22 @@ public class House {
     private Address address;
     @Embedded
     private PropertyFeatures propertyFeatures;
-    private HouseStatus status;
     @ManyToOne
     @JoinColumn(name = "user_user_id")
     private User user;
+    @Enumerated(EnumType.STRING)
+    private HouseType houseType;
+    @Enumerated(EnumType.STRING)
+    private HouseStatus status;
+    private BigDecimal rentValue;
+    private String name;
+    private String description;
+
+    @CreationTimestamp
+    private Instant createAt;
+
+    @UpdateTimestamp
+    private Instant updateAt;
 
     public User getUser() {
         return user;
@@ -39,22 +49,30 @@ public class House {
         this.user = user;
     }
 
-
     public House() {
     }
 
-    public House(Address address, PropertyFeatures propertyFeatures, HouseStatus status) {
+    public House(Address address, PropertyFeatures propertyFeatures, HouseType houseType, BigDecimal rentValue, String name, String description) {
         this.address = address;
         this.propertyFeatures = propertyFeatures;
-        this.status = status;
-    }
-
-
-    public House(Address address, PropertyFeatures propertyFeatures) {
-        this.address = address;
-        this.propertyFeatures = propertyFeatures;
+        this.houseType = houseType;
+        this.rentValue = rentValue;
+        this.name = name;
+        this.description = description;
         this.status = HouseStatus.DISPONIVEL;
     }
+
+    public House(Address address, PropertyFeatures propertyFeatures, User user, HouseType houseType, HouseStatus status, BigDecimal rentValue, String name, String description) {
+        this.address = address;
+        this.propertyFeatures = propertyFeatures;
+        this.user = user;
+        this.houseType = houseType;
+        this.status = status;
+        this.rentValue = rentValue;
+        this.name = name;
+        this.description = description;
+    }
+
 
     public Address getAddress() {
         return address;
@@ -82,5 +100,57 @@ public class House {
 
     public UUID getHouseId() {
         return houseId;
+    }
+
+    public void setHouseId(UUID houseId) {
+        this.houseId = houseId;
+    }
+
+    public HouseType getHouseType() {
+        return houseType;
+    }
+
+    public void setHouseType(HouseType houseType) {
+        this.houseType = houseType;
+    }
+
+    public BigDecimal getRentValue() {
+        return rentValue;
+    }
+
+    public void setRentValue(BigDecimal rentValue) {
+        this.rentValue = rentValue;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Instant getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Instant createAt) {
+        this.createAt = createAt;
+    }
+
+    public Instant getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Instant updateAt) {
+        this.updateAt = updateAt;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
