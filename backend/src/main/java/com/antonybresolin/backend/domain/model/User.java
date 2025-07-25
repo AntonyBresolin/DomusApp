@@ -11,11 +11,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,8 +30,6 @@ public class User {
     private String password;
     private String name;
     private String cpf;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<House> houses = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
@@ -96,13 +92,6 @@ public class User {
         this.cpf = cpf;
     }
 
-    public Set<House> getHouses() {
-        return houses;
-    }
-
-    public void setHouses(Set<House> houses) {
-        this.houses = houses;
-    }
 
     public UUID getId() {
         return id;

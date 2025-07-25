@@ -6,6 +6,7 @@ import com.antonybresolin.backend.domain.model.value.HouseType;
 import com.antonybresolin.backend.presentation.dto.CreateHouseDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -24,7 +25,7 @@ public class HousePresentation {
         this.houseService = houseService;
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<House> getHousesByOwner(JwtAuthenticationToken token) {
         String username = token.getName();
         return houseService.getHousesByOwner(username).orElse(Collections.emptyList());
