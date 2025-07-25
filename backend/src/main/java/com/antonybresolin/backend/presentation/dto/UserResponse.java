@@ -3,9 +3,9 @@ package com.antonybresolin.backend.presentation.dto;
 import java.util.Set;
 
 public class UserResponse {
-    private String username;
-    private Set<String> roles;
-    private String name;
+    private final String username;
+    private final Set<String> roles;
+    private final String name;
 
     public UserResponse(String username, Set<String> roles, String name) {
         this.username = username;
