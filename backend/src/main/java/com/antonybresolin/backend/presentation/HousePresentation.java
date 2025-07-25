@@ -2,8 +2,10 @@ package com.antonybresolin.backend.presentation;
 
 import com.antonybresolin.backend.application.HouseService;
 import com.antonybresolin.backend.domain.model.House;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import com.antonybresolin.backend.domain.model.value.HouseType;
+import com.antonybresolin.backend.presentation.dto.CreateHouseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -14,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/houses")
-@SecurityRequirement(name = "bearerAuth")
 public class HousePresentation {
     private final HouseService houseService;
 
@@ -23,20 +24,28 @@ public class HousePresentation {
         this.houseService = houseService;
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<House> getHousesByOwner(JwtAuthenticationToken token) {
         String username = token.getName();
         return houseService.getHousesByOwner(username).orElse(Collections.emptyList());
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'LOCATOR')")
-    public ResponseEntity<String> createHouse(@RequestBody House house,
-                                              JwtAuthenticationToken token) {
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_LOCATOR')")
+    public ResponseEntity<String> createHouse(@RequestBody CreateHouseDTO houseDTO,
+                                            JwtAuthenticationToken token){
         String username = token.getName();
-        // TODO - Fazer validação em todos lugares se o userID do token é igual ao que ele está passando em house
 
-        return houseService.createHouse(house, username);
+        // TODO - Fazer validação em todos lugares se o userID do token é igual ao que ele está passando em house
+        return houseService.createHouse(
+                new House(
+                        houseDTO.address(),
+                        houseDTO.propertyFeatures(),
+                        houseDTO.houseType() != null ? houseDTO.houseType() : HouseType.HOUSE,
+                        houseDTO.rentValue(),
+                        houseDTO.name(),
+                        houseDTO.description()),
+                username);
     }
 
 }
