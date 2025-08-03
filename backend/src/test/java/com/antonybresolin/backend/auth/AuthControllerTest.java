@@ -4,7 +4,7 @@ import com.antonybresolin.backend.application.AuthService;
 import com.antonybresolin.backend.domain.model.Role;
 import com.antonybresolin.backend.domain.model.User;
 import com.antonybresolin.backend.infrastructure.repositories.UserRepository;
-import com.antonybresolin.backend.presentation.AuthPresentation;
+import com.antonybresolin.backend.presentation.AuthController;
 import com.antonybresolin.backend.presentation.dto.LoginRequest;
 import com.antonybresolin.backend.presentation.dto.UserAuthenticatedResponse;
 import jakarta.servlet.http.Cookie;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 
 
 @Transactional
-public class AuthPresentationTest {
+public class AuthControllerTest {
 
     @Mock
     private JwtEncoder jwtEncoder;
@@ -47,7 +47,7 @@ public class AuthPresentationTest {
     @Mock
     private HttpServletResponse response;
 
-    private AuthPresentation authPresentation;
+    private AuthController authController;
     private User mockUser;
 
     @BeforeEach
@@ -55,7 +55,7 @@ public class AuthPresentationTest {
         MockitoAnnotations.openMocks(this);
 
         AuthService authService = new AuthService(passwordEncoder, userRepository, jwtEncoder);
-        authPresentation = new AuthPresentation(authService);
+        authController = new AuthController(authService);
 
         mockUser = new User();
         mockUser.setUsername("testuser");
@@ -77,7 +77,7 @@ public class AuthPresentationTest {
         when(passwordEncoder.matches(eq(loginRequest.password()), eq(mockUser.getPassword())))
                 .thenReturn(true);
 
-        ResponseEntity<UserAuthenticatedResponse> responseEntity = authPresentation.login(loginRequest, response);
+        ResponseEntity<UserAuthenticatedResponse> responseEntity = authController.login(loginRequest, response);
 
         assertNotNull(responseEntity);
         assertEquals(200, responseEntity.getStatusCode().value());
@@ -94,7 +94,7 @@ public class AuthPresentationTest {
                 .thenReturn(false);
 
         assertThrows(BadCredentialsException.class, () -> {
-            authPresentation.login(loginRequest, response);
+            authController.login(loginRequest, response);
         });
     }
 
@@ -104,13 +104,13 @@ public class AuthPresentationTest {
         when(userRepository.findByUsername("nonexistentuser")).thenReturn(Optional.empty());
 
         assertThrows(BadCredentialsException.class, () -> {
-            authPresentation.login(loginRequest, response);
+            authController.login(loginRequest, response);
         });
     }
 
     @Test
     void logout_ClearsUserCookie() {
-        ResponseEntity<Map<String, String>> responseEntity = authPresentation.logout(response);
+        ResponseEntity<Map<String, String>> responseEntity = authController.logout(response);
 
         assertNotNull(responseEntity);
         assertEquals(200, responseEntity.getStatusCode().value());

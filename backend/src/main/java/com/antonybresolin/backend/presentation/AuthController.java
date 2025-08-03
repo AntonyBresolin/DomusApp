@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/auth")
-public class AuthPresentation {
+public class AuthController {
     private final AuthService authService;
 
-    public AuthPresentation(AuthService authService) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
