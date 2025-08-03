@@ -5,6 +5,7 @@ import com.antonybresolin.backend.domain.model.User;
 import com.antonybresolin.backend.infrastructure.repositories.RoleRepository;
 import com.antonybresolin.backend.infrastructure.repositories.UserRepository;
 import com.antonybresolin.backend.presentation.dto.CreateUserDto;
+import com.antonybresolin.backend.presentation.dto.UpdateUserNoSensitiveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -43,6 +45,25 @@ public class UserService {
         );
 
         return ResponseEntity.status(201).build();
+    }
+
+    public ResponseEntity<Void> updateUser(UpdateUserNoSensitiveDTO updateUserNoSensitiveDTO, String username) {
+        Optional<User> currentUser = userRepository.findByUsername(username);
+
+        currentUser.ifPresentOrElse(
+                user -> {
+                    if (updateUserNoSensitiveDTO.contractEssentialData() != null) { user.setContractEssentialData(updateUserNoSensitiveDTO.contractEssentialData()); }
+                    if (updateUserNoSensitiveDTO.address() != null) { user.setAddress(updateUserNoSensitiveDTO.address()); }
+                    if (updateUserNoSensitiveDTO.name() != null) { user.setName(updateUserNoSensitiveDTO.name()); }
+                    if (updateUserNoSensitiveDTO.cpf() != null) { user.setCpf(updateUserNoSensitiveDTO.cpf()); }
+
+                    userRepository.save(user);
+                },
+                () -> {
+                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+        );
+        return ResponseEntity.ok().build();
     }
 
     private Set<Role> getUserRoles(CreateUserDto dto) {

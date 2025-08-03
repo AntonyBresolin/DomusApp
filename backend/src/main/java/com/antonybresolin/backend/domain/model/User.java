@@ -1,19 +1,14 @@
 package com.antonybresolin.backend.domain.model;
 
+import com.antonybresolin.backend.domain.model.value.Address;
+import com.antonybresolin.backend.domain.model.value.ContractEssentialData;
 import com.antonybresolin.backend.presentation.dto.LoginRequest;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,6 +25,16 @@ public class User {
     private String password;
     private String name;
     private String cpf;
+    @Embedded
+    private Address address;
+    @Embedded
+    private ContractEssentialData contractEssentialData;
+
+    @CreationTimestamp
+    private Instant createAt;
+
+    @UpdateTimestamp
+    private Instant updateAt;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
@@ -103,5 +108,21 @@ public class User {
         }
 
         return passwordEncoder.matches(loginRequest.password(), this.password);
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public ContractEssentialData getContractEssentialData() {
+        return contractEssentialData;
+    }
+
+    public void setContractEssentialData(ContractEssentialData contractEssentialData) {
+        this.contractEssentialData = contractEssentialData;
     }
 }

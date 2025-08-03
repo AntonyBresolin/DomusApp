@@ -5,7 +5,7 @@ import com.antonybresolin.backend.domain.model.Role;
 import com.antonybresolin.backend.domain.model.User;
 import com.antonybresolin.backend.infrastructure.repositories.RoleRepository;
 import com.antonybresolin.backend.infrastructure.repositories.UserRepository;
-import com.antonybresolin.backend.presentation.UserPresentation;
+import com.antonybresolin.backend.presentation.UserController;
 import com.antonybresolin.backend.presentation.dto.CreateUserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @Transactional
-public class UserPresentationTest {
+public class UserControllerTest {
 
     @Mock
     private JwtEncoder jwtEncoder;
@@ -41,14 +41,14 @@ public class UserPresentationTest {
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
 
-    private UserPresentation userPresentation;
+    private UserController userController;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
         UserService userService = new UserService(userRepository, roleRepository, passwordEncoder);
-        userPresentation = new UserPresentation(userService);
+        userController = new UserController(userService);
 
         Role basicRole = new Role();
         basicRole.setName("BASIC");
@@ -67,7 +67,7 @@ public class UserPresentationTest {
         
         when(userRepository.findByUsername("antony")).thenReturn(Optional.empty());
         
-        ResponseEntity<Void> responseEntity = userPresentation.newUser(dto);
+        ResponseEntity<Void> responseEntity = userController.newUser(dto);
         
         assertNotNull(responseEntity);
         assertEquals(201, responseEntity.getStatusCode().value());
@@ -84,7 +84,7 @@ public class UserPresentationTest {
         when(userRepository.findByUsername("antony")).thenReturn(Optional.of(existingUser));
         
         assertThrows(ResponseStatusException.class, () -> {
-            userPresentation.newUser(dto);
+            userController.newUser(dto);
         });
         
         verify(userRepository, never()).save(any(User.class));
