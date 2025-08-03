@@ -4,6 +4,7 @@ import com.antonybresolin.backend.application.HouseService;
 import com.antonybresolin.backend.domain.model.House;
 import com.antonybresolin.backend.domain.model.value.HouseType;
 import com.antonybresolin.backend.presentation.dto.CreateHouseDTO;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/houses")
-public class HousePresentation {
+@SecurityRequirement(name = "bearerAuth")
+public class HouseController {
     private final HouseService houseService;
 
     @Autowired
-    public HousePresentation(HouseService houseService) {
+    public HouseController(HouseService houseService) {
         this.houseService = houseService;
     }
 

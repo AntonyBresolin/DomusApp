@@ -57,7 +57,7 @@ public class House {
         this.houseType = houseType;
         this.rentValue = rentValue;
         this.name = name;
-        this.description = description;
+        this.description = description; 
         this.status = HouseStatus.DISPONIVEL;
     }
 
